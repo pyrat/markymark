@@ -1,0 +1,55 @@
+:root {
+  color-scheme: light dark;
+  --foreground: #24292f;
+  --background: #ffffff;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --subtle: #f6f8fa;
+  --link: #0969da;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground: #e6edf3;
+    --background: #16191e;
+    --muted: #9da7b3;
+    --border: #363d47;
+    --subtle: #22272e;
+    --link: #79b8ff;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font: 16px/1.7 -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  overflow-wrap: break-word;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 860px; padding: 40px 48px 80px; margin: 0 auto; }
+h1, h2, h3, h4, h5, h6 { line-height: 1.3; margin: 1.5em 0 .6em; font-weight: 650; scroll-margin-top: 24px; }
+main > :first-child { margin-top: 0; }
+h1 { font-size: 2.15em; letter-spacing: -.03em; }
+h2 { font-size: 1.55em; }
+h1, h2 { padding-bottom: .3em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.25em; }
+p, ul, ol, blockquote, pre, table { margin: 0 0 1.1em; }
+a { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+li + li { margin-top: .25em; }
+li > p { margin-bottom: .5em; }
+li > ul, li > ol { margin-bottom: 0; }
+blockquote { margin-left: 0; padding: 0 1em; border-left: 4px solid var(--border); color: var(--muted); }
+blockquote > :last-child { margin-bottom: 0; }
+code, pre { font-family: ui-monospace, "SFMono-Regular", Menlo, monospace; font-size: .88em; }
+code { padding: .18em .4em; background: var(--subtle); border-radius: 5px; }
+pre { padding: 18px 20px; overflow-x: auto; background: var(--subtle); border: 1px solid var(--border); border-radius: 8px; line-height: 1.55; }
+pre code { padding: 0; background: transparent; font-size: 1em; }
+table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; }
+th, td { border: 1px solid var(--border); padding: 8px 14px; }
+th { font-weight: 600; background: var(--subtle); }
+tr:nth-child(even) { background: var(--subtle); }
+img { max-width: 100%; height: auto; border-radius: 5px; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+@media (max-width: 600px) { main { padding: 28px 24px 56px; } }
+@media print { :root { color-scheme: light; } main { max-width: none; padding: 0; } }
