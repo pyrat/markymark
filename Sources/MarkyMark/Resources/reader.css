@@ -1,20 +1,22 @@
 :root {
   color-scheme: light dark;
-  --foreground: #24292f;
-  --background: #ffffff;
-  --muted: #59636e;
-  --border: #d1d9e0;
-  --subtle: #f6f8fa;
-  --link: #0969da;
+  --foreground: #203b35;
+  --background: #f3f7f2;
+  --muted: #526b60;
+  --border: #bdcec2;
+  --subtle: #e6eee5;
+  --link: #006e76;
+  --accent: #217343;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --foreground: #e6edf3;
-    --background: #16191e;
-    --muted: #9da7b3;
-    --border: #363d47;
-    --subtle: #22272e;
-    --link: #79b8ff;
+    --foreground: #d1e2d6;
+    --background: #0c1210;
+    --muted: #8ba898;
+    --border: #2a4135;
+    --subtle: #141f19;
+    --link: #67dbe5;
+    --accent: #9aef85;
   }
 }
 * { box-sizing: border-box; }
@@ -22,28 +24,32 @@ body {
   margin: 0;
   background: var(--background);
   color: var(--foreground);
-  font: 16px/1.7 -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  font: 15px/1.85 "Marky Nerd", ui-monospace, Menlo, monospace;
   overflow-wrap: break-word;
   -webkit-font-smoothing: antialiased;
 }
-main { max-width: 860px; padding: 40px 48px 80px; margin: 0 auto; }
+::selection { background: var(--accent); color: var(--background); }
+.terminal-bar { max-width: 960px; margin: 0 auto; padding: 18px 48px; border-bottom: 1px solid var(--border); color: var(--accent); font-size: 12px; letter-spacing: .06em; }
+.terminal-status { float: right; color: var(--muted); font-size: 10px; padding-top: 2px; }
+main { max-width: 960px; padding: 40px 48px 80px; margin: 0 auto; }
 h1, h2, h3, h4, h5, h6 { line-height: 1.3; margin: 1.5em 0 .6em; font-weight: 650; scroll-margin-top: 24px; }
 main > :first-child { margin-top: 0; }
-h1 { font-size: 2.15em; letter-spacing: -.03em; }
+h1 { font-size: 2em; letter-spacing: -.04em; color: var(--accent); }
 h2 { font-size: 1.55em; }
 h1, h2 { padding-bottom: .3em; border-bottom: 1px solid var(--border); }
 h3 { font-size: 1.25em; }
 p, ul, ol, blockquote, pre, table { margin: 0 0 1.1em; }
 a { color: var(--link); text-decoration: none; }
-a:hover { text-decoration: underline; }
+a:hover { text-decoration: underline; text-underline-offset: 4px; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 li + li { margin-top: .25em; }
 li > p { margin-bottom: .5em; }
 li > ul, li > ol { margin-bottom: 0; }
-blockquote { margin-left: 0; padding: 0 1em; border-left: 4px solid var(--border); color: var(--muted); }
+blockquote { margin-left: 0; padding: .8em 1em; border-left: 3px solid var(--accent); background: var(--subtle); color: var(--muted); }
 blockquote > :last-child { margin-bottom: 0; }
-code, pre { font-family: ui-monospace, "SFMono-Regular", Menlo, monospace; font-size: .88em; }
-code { padding: .18em .4em; background: var(--subtle); border-radius: 5px; }
-pre { padding: 18px 20px; overflow-x: auto; background: var(--subtle); border: 1px solid var(--border); border-radius: 8px; line-height: 1.55; }
+code, pre { font-family: "Marky Nerd", ui-monospace, Menlo, monospace; font-size: .9em; }
+code { padding: .18em .4em; background: var(--subtle); color: var(--accent); border-radius: 3px; }
+pre { padding: 20px 24px; overflow-x: auto; background: var(--subtle); border: 1px solid var(--border); border-top: 2px solid var(--accent); border-radius: 4px; line-height: 1.7; }
 pre code { padding: 0; background: transparent; font-size: 1em; }
 table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; }
 th, td { border: 1px solid var(--border); padding: 8px 14px; }
@@ -51,5 +57,9 @@ th { font-weight: 600; background: var(--subtle); }
 tr:nth-child(even) { background: var(--subtle); }
 img { max-width: 100%; height: auto; border-radius: 5px; }
 hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
-@media (max-width: 600px) { main { padding: 28px 24px 56px; } }
-@media print { :root { color-scheme: light; } main { max-width: none; padding: 0; } }
+@media (max-width: 600px) { main { padding: 28px 24px 56px; } .terminal-bar { padding: 16px 24px; } }
+@media print {
+  :root { color-scheme: light; --foreground: #111; --background: #fff; --muted: #444; --border: #ccc; --subtle: #f6f6f6; --link: #164c61; --accent: #205532; }
+  .terminal-bar { display: none; }
+  main { max-width: none; padding: 0; }
+}

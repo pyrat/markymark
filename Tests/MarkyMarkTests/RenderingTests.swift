@@ -45,6 +45,11 @@ final class RenderingTests: XCTestCase {
         XCTAssertEqual(result["cells"] as? Int, 2)
         XCTAssertTrue((result["code"] as? String)?.contains("let greeting") == true)
         XCTAssertEqual(result["unsafe"] as? Bool, false)
+        let fontLoaded = try await webView.callAsyncJavaScript("""
+        const faces = await document.fonts.load('15px "Marky Nerd"', 'Hello \\uf120');
+        return faces.length > 0 && faces.every(face => face.status === 'loaded');
+        """, arguments: [:], in: nil, contentWorld: .page)
+        XCTAssertEqual(fontLoaded as? Bool, true, "The bundled Nerd Font should load under the page's CSP")
         withExtendedLifetime(delegate) {}
     }
 

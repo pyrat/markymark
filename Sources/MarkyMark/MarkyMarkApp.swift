@@ -94,11 +94,12 @@ struct ViewerView: View {
                 MarkdownWebView(markdown: viewer.markdown, fileURL: url)
             } else {
                 VStack(spacing: 16) {
-                    Image(systemName: "doc.richtext")
+                    Image(systemName: "terminal")
                         .font(.system(size: 56, weight: .light))
                         .foregroundStyle(.secondary)
-                    Text("MarkyMark").font(.largeTitle.bold())
-                    Text("Drop a Markdown file here to read it.")
+                    Text("> markymark_").font(.system(.largeTitle, design: .monospaced).bold())
+                    Text("Drop a .md file. Enter reading mode.")
+                        .font(.system(.body, design: .monospaced))
                         .foregroundStyle(.secondary)
                     Button("Open Markdown…") { viewer.chooseFile() }
                         .controlSize(.large)
@@ -227,20 +228,33 @@ final class LocalAssets: NSObject, WKURLSchemeHandler {
 }
 
 enum Renderer {
-    private static func resource(_ name: String, extension ext: String) -> String {
+    private static func resourceData(_ name: String, extension ext: String) -> Data {
         let packaged = Bundle.main.resourceURL?
             .appendingPathComponent("MarkyMark_MarkyMark.bundle")
         let bundle = packaged.flatMap { Bundle(url: $0) } ?? Bundle.module
         guard let url = bundle.url(forResource: name, withExtension: ext),
-              let text = try? String(contentsOf: url, encoding: .utf8) else {
+              let data = try? Data(contentsOf: url) else {
             fatalError("Missing bundled resource: \(name).\(ext)")
         }
-        return text
+        return data
+    }
+
+    private static func resource(_ name: String, extension ext: String) -> String {
+        String(decoding: resourceData(name, extension: ext), as: UTF8.self)
     }
 
     private static let marked = resource("marked", extension: "js")
     private static let purify = resource("purify", extension: "js")
     private static let css = resource("reader", extension: "css")
+    private static let fontCSS = """
+    @font-face {
+      font-family: 'Marky Nerd';
+      src: url(data:font/ttf;base64,\(resourceData("JetBrainsMonoNLNerdFontMono-Regular", extension: "ttf").base64EncodedString())) format('truetype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    """
 
     static func html(_ markdown: String) -> String {
         let encoded = Data(markdown.utf8).base64EncodedString()
@@ -249,9 +263,9 @@ enum Renderer {
         <!doctype html>
         <html lang="en"><head><meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'nonce-\(nonce)'; style-src 'unsafe-inline'; img-src markymark-local: https: http: data:; base-uri 'none'; form-action 'none'">
-        <style>\(css)</style>
-        </head><body><main id="content" aria-label="Markdown document"></main>
+        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'nonce-\(nonce)'; style-src 'unsafe-inline'; font-src data:; img-src markymark-local: https: http: data:; base-uri 'none'; form-action 'none'">
+        <style>\(fontCSS)\(css)</style>
+        </head><body><header class="terminal-bar" aria-label="MarkyMark reader"><span aria-hidden="true">&#xf120; </span>markymark<span class="terminal-status">READ ONLY / LOCAL</span></header><main id="content" aria-label="Markdown document"></main>
         <script nonce="\(nonce)">\(marked)</script>
         <script nonce="\(nonce)">\(purify)</script>
         <script nonce="\(nonce)">

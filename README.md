@@ -24,6 +24,7 @@
 - **Drop it like it's Markdown.** Drag a file into the window, open it from Finder, or hit **⌘O**.
 - **All the good formatting.** Headings, lists, tables, blockquotes, code blocks, links, and images.
 - **Light or dark, naturally.** The reader follows your system appearance.
+- **Terminal soul.** Bundled JetBrains Mono Nerd Font, green and cyan accents, and crisp code panels. No font installation needed.
 - **Local files, local reading.** Markdown rendering works offline, with the parser and sanitizer bundled into the app. Remote images need a connection.
 - **Follow the thread.** Relative Markdown links open in the viewer; web links open in your browser.
 - **Your editor's reading companion.** Edit in your favourite app, then press **⌘R** to refresh the view.
@@ -92,6 +93,7 @@ MarkyMark is released under the [MIT License](LICENSE). Bundled third-party libr
 
 - [Marked 17.0.1](https://github.com/markedjs/marked) — MIT; [bundled license](Sources/MarkyMark/Resources/Marked-LICENSE.txt).
 - [DOMPurify 3.3.0](https://github.com/cure53/DOMPurify) — Apache-2.0 or MPL-2.0; [bundled licenses](Sources/MarkyMark/Resources/DOMPurify-LICENSE.txt).
+- [JetBrains Mono Nerd Font](https://www.nerdfonts.com/) — bundled from Nerd Fonts v3.4.0, SIL Open Font License 1.1; [bundled license](Sources/MarkyMark/Resources/JetBrainsMono-LICENSE.txt).
 
 ---
 
