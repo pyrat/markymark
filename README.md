@@ -53,10 +53,13 @@ To make it the default, choose **Get Info → Open with → MarkyMark → Change
 | --- | --- |
 | Open a file | **⌘O**, the folder button, or drag and drop |
 | Reload after editing | **⌘R** |
+| Export as PDF | **⇧⌘E**, File → Export as PDF, or the export button |
 | Open a linked Markdown file | Click a relative Markdown link |
 | Open a web link | Click to launch your browser |
 
 Relative images load from the document's directory and its subdirectories. Keep linked documents and images alongside your Markdown files for a portable reading setup.
+
+PDF exports preserve the reader’s current light/dark appearance, bundled font, and layout at the window’s width. The full document is saved as one continuous PDF page.
 
 ## Under the hood
 

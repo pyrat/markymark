@@ -1,8 +1,35 @@
 import XCTest
 import WebKit
+import PDFKit
 @testable import MarkyMark
 
 final class RenderingTests: XCTestCase {
+    @MainActor
+    func testPDFExportIncludesFullDocumentAndReaderStyling() async throws {
+        let webView = WKWebView(frame: CGRect(x: 0, y: 0, width: 900, height: 600))
+        let loaded = expectation(description: "Export document loaded")
+        let delegate = LoadDelegate { loaded.fulfill() }
+        webView.navigationDelegate = delegate
+        let paragraphs = (1...50).map { "Paragraph \($0) with **formatted text**." }.joined(separator: "\n\n")
+        webView.loadHTMLString(Renderer.html("# Export heading\n\n" + paragraphs + "\n\nEND OF DOCUMENT"), baseURL: nil)
+        await fulfillment(of: [loaded], timeout: 15)
+        let contentWidth = try await webView.evaluateJavaScript("document.documentElement.clientWidth") as! Double
+        _ = try await webView.evaluateJavaScript("window.scrollTo(0, 800)")
+        let data = try await PDFExporter.pdfData(from: webView)
+        let document = try XCTUnwrap(PDFDocument(data: data))
+        XCTAssertEqual(document.pageCount, 1)
+        let page = try XCTUnwrap(document.page(at: 0))
+        XCTAssertEqual(page.bounds(for: .mediaBox).width, contentWidth, accuracy: 1)
+        XCTAssertGreaterThan(page.bounds(for: .mediaBox).height, 600)
+        let text = try XCTUnwrap(document.string)
+        XCTAssertTrue(text.contains("Export heading"))
+        XCTAssertTrue(text.contains("END OF DOCUMENT"))
+        // The terminal header is hidden by print CSS, so its presence verifies
+        // that export uses the reader's screen layout instead.
+        XCTAssertTrue(text.contains("markymark"))
+        withExtendedLifetime(delegate) {}
+    }
+
     @MainActor
     func testMarkdownRendersAndUnsafeHTMLIsRemoved() async throws {
         let configuration = WKWebViewConfiguration()

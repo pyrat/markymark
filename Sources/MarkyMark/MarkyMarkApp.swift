@@ -7,6 +7,7 @@ import WebKit
 struct MarkyMarkApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
     @StateObject private var viewer = ViewerModel.shared
+    @FocusedObject private var pdfExporter: PDFExporter?
 
     var body: some Scene {
         WindowGroup {
@@ -20,7 +21,11 @@ struct MarkyMarkApp: App {
                 Button("Open Markdown…") { viewer.chooseFile() }
                     .keyboardShortcut("o")
             }
-            CommandGroup(replacing: .saveItem) {}
+            CommandGroup(replacing: .saveItem) {
+                Button("Export as PDF…") { pdfExporter?.exportPDF() }
+                    .keyboardShortcut("e", modifiers: [.command, .shift])
+                    .disabled(pdfExporter?.canExport != true)
+            }
             CommandGroup(after: .newItem) {
                 Button("Reload File") { viewer.reload() }
                     .keyboardShortcut("r")
@@ -87,11 +92,12 @@ final class ViewerModel: ObservableObject {
 struct ViewerView: View {
     @ObservedObject var viewer: ViewerModel
     @State private var isDropTarget = false
+    @StateObject private var pdfExporter = PDFExporter()
 
     var body: some View {
         Group {
             if let url = viewer.fileURL {
-                MarkdownWebView(markdown: viewer.markdown, fileURL: url)
+                MarkdownWebView(markdown: viewer.markdown, fileURL: url, pdfExporter: pdfExporter)
             } else {
                 VStack(spacing: 16) {
                     Image(systemName: "terminal")
@@ -118,7 +124,15 @@ struct ViewerView: View {
             }
         }
         .navigationTitle(viewer.fileURL?.lastPathComponent ?? "MarkyMark")
+        .focusedSceneObject(pdfExporter)
         .toolbar {
+            ToolbarItem {
+                Button { pdfExporter.exportPDF() } label: {
+                    Label("Export as PDF", systemImage: "square.and.arrow.up")
+                }
+                .disabled(!pdfExporter.canExport)
+                .help("Export as PDF (⇧⌘E)")
+            }
             ToolbarItem {
                 Button { viewer.chooseFile() } label: {
                     Label("Open Markdown", systemImage: "folder")
@@ -134,7 +148,7 @@ struct ViewerView: View {
             }
             return true
         }
-        .alert("Unable to Open File", isPresented: Binding(
+        .alert("Unable to Complete Action", isPresented: Binding(
             get: { viewer.error != nil },
             set: { if !$0 { viewer.error = nil } }
         )) {
@@ -148,8 +162,9 @@ struct ViewerView: View {
 struct MarkdownWebView: NSViewRepresentable {
     let markdown: String
     let fileURL: URL
+    let pdfExporter: PDFExporter
 
-    func makeCoordinator() -> Coordinator { Coordinator() }
+    func makeCoordinator() -> Coordinator { Coordinator(pdfExporter: pdfExporter) }
 
     func makeNSView(context: Context) -> WKWebView {
         let configuration = WKWebViewConfiguration()
@@ -158,6 +173,7 @@ struct MarkdownWebView: NSViewRepresentable {
         webView.navigationDelegate = context.coordinator
         webView.setValue(false, forKey: "drawsBackground")
         webView.allowsBackForwardNavigationGestures = false
+        pdfExporter.webView = webView
         return webView
     }
 
@@ -166,6 +182,8 @@ struct MarkdownWebView: NSViewRepresentable {
         guard coordinator.markdown != markdown || coordinator.fileURL != fileURL else { return }
         coordinator.markdown = markdown
         coordinator.fileURL = fileURL
+        pdfExporter.fileURL = fileURL
+        pdfExporter.documentID = UUID()
         coordinator.assets.directory = fileURL.deletingLastPathComponent()
         // Keep the page at about:blank. A custom-scheme page URL can be handed
         // to Launch Services by WebKit; only image requests need our scheme.
@@ -174,8 +192,23 @@ struct MarkdownWebView: NSViewRepresentable {
 
     final class Coordinator: NSObject, WKNavigationDelegate {
         let assets = LocalAssets()
+        let pdfExporter: PDFExporter?
         var markdown: String?
         var fileURL: URL?
+
+        init(pdfExporter: PDFExporter? = nil) { self.pdfExporter = pdfExporter }
+
+        func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+            pdfExporter?.isReady = false
+        }
+
+        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+            pdfExporter?.isReady = true
+        }
+
+        func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+            pdfExporter?.isReady = false
+        }
 
         func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction,
                      decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
