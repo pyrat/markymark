@@ -19,6 +19,21 @@
 
 ---
 
+## Two moods. One good read.
+
+Real app windows, showing the same Markdown in light and dark mode. Click either screenshot for a closer look.
+
+<table>
+  <tr>
+    <th>Light by day</th>
+    <th>Dark after hours</th>
+  </tr>
+  <tr>
+    <td><a href="Assets/Screenshots/light.png"><img src="Assets/Screenshots/light.png" alt="MarkyMark in light mode displaying headings, a blockquote, a list, a code block, and a table" width="450"></a></td>
+    <td><a href="Assets/Screenshots/dark.png"><img src="Assets/Screenshots/dark.png" alt="MarkyMark in dark mode displaying the same Markdown with green accents and dark code panels" width="450"></a></td>
+  </tr>
+</table>
+
 ## Markdown, dressed for the Mac
 
 - **Drop it like it's Markdown.** Drag a file into the window, open it from Finder, or hit **⌘O**.
@@ -68,7 +83,7 @@ PDF exports preserve the reader’s current light/dark appearance, bundled font,
 ```text
 Sources/MarkyMark/         App, renderer, and bundled web resources
 Tests/MarkyMarkTests/      Rendering tests
-Assets/                   App icon
+Assets/                   App icon, screenshots, and sample Markdown
 scripts/                  App packaging and icon generation
 ```
 
